@@ -51,7 +51,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Place placeFromMain;
     PlaceDatabase db;
     PlaceDao placeDao;
-
+    SharedPreferences sharedPreferences;
+    boolean trackBoolean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         registerLauncher();
 
+        sharedPreferences = MapsActivity.this.getSharedPreferences("com.atilsamancioglu.travelbookjava",MODE_PRIVATE);
+        trackBoolean = false;
+
         selectedLatitude = 0.0;
         selectedLongitude= 0.0;
 
@@ -81,15 +85,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -107,8 +103,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             locationListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(@NonNull Location location) {
-                    SharedPreferences sharedPreferences = MapsActivity.this.getSharedPreferences("com.atilsamancioglu.travelbookjava",MODE_PRIVATE);
-                    boolean trackBoolean = sharedPreferences.getBoolean("trackBoolean",false);
+                    trackBoolean = sharedPreferences.getBoolean("trackBoolean",false);
 
                     if(!trackBoolean) {
                         LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
@@ -141,6 +136,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     LatLng lastUserLocation = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastUserLocation,15));
                 }
+
+                mMap.setMyLocationEnabled(true);
 
             }
         } else {
